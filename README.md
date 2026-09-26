@@ -1,8 +1,8 @@
 # Students API
 
-A REST API for students, built by following the Coder's Gyan video
+A REST API for students
 **"Build a Fast & Scalable REST API with GoLang"**
-(code: https://github.com/codersgyan/go-students-api).
+
 
 It uses Go's standard `net/http` router, **raw SQL** with `database/sql` and
 SQLite, a YAML config file, request validation, structured logging (`slog`),
