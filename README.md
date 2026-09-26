@@ -13,15 +13,6 @@ and graceful shutdown.
 > `modernc.org/sqlite` driver instead. Only the import and the driver name
 > (`"sqlite"` instead of `"sqlite3"`) in `internal/storage/sqlite/sqlite.go` differ.
 
-## Bug fixes compared with the video
-
-| # | Problem in the video's code | Fix |
-|---|---|---|
-| 1 | Ctrl+C printed `failed to start server` and exited before the graceful shutdown finished | ignore `http.ErrServerClosed` in `main.go` |
-| 2 | `GET /api/students/{id}` for a missing ID returned **500** | new `storage.ErrNotFound`, handler returns **404** |
-| 3 | database errors were sent as `{}` | send `response.GeneralError(err)` so the message is visible |
-| 4 | "user created successfully" was logged even when the insert failed | log only after the error check |
-
 ## Run it
 
 ```bash

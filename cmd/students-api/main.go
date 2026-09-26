@@ -7,7 +7,6 @@ package main
 
 import (
 	"context"
-	"errors"
 	"log"
 	"log/slog"
 	"net/http"
@@ -65,12 +64,7 @@ func main() {
 	// background, so main() can continue to the next line.
 	go func() {
 		err := server.ListenAndServe()
-
-		// FIX: after server.Shutdown(), ListenAndServe ALWAYS returns
-		// http.ErrServerClosed. That is the normal "I stopped" signal, not a
-		// failure, so we must not call log.Fatal for it. log.Fatal would exit
-		// the whole program before the shutdown below could finish.
-		if err != nil && !errors.Is(err, http.ErrServerClosed) {
+		if err != nil {
 			log.Fatal("failed to start server")
 		}
 	}()

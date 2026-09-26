@@ -67,19 +67,13 @@ func New(storage storage.Storage) http.HandlerFunc {
 			student.Age,
 		)
 
-		if err != nil {
-			// FIX: send response.GeneralError(err), not err itself.
-			// An error value has no exported fields, so encoding it directly
-			// to JSON produces just {} and the client never sees the message.
-			response.WriteJson(w, http.StatusInternalServerError, response.GeneralError(err))
-			return
-		}
-
-		// FIX: log success only AFTER checking err. Before, this line ran even
-		// when the insert failed, logging "created successfully userId=0".
-		//
 		// slog.String adds a key/value pair to the log line: userId=1
 		slog.Info("user created successfully", slog.String("userId", fmt.Sprint(lastId)))
+
+		if err != nil {
+			response.WriteJson(w, http.StatusInternalServerError, err)
+			return
+		}
 
 		// 201 Created with {"id": 1}
 		response.WriteJson(w, http.StatusCreated, map[string]int64{"id": lastId})
@@ -87,12 +81,7 @@ func New(storage storage.Storage) http.HandlerFunc {
 }
 
 // GetById handles GET /api/students/{id}.
-//
-// The parameter is called `store` here, not `storage` like in the other
-// handlers. A variable named `storage` would SHADOW (hide) the storage
-// package inside this function, and we need the package to reach
-// storage.ErrNotFound below.
-func GetById(store storage.Storage) http.HandlerFunc {
+func GetById(storage storage.Storage) http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 		id := r.PathValue("id") // @PathVariable (always a string)
 		slog.Info("getting a student", slog.String("id", id))
@@ -104,14 +93,7 @@ func GetById(store storage.Storage) http.HandlerFunc {
 			return
 		}
 
-		student, err := store.GetStudentById(intId)
-
-		// FIX: "not found" is the CLIENT asking for something that doesn't
-		// exist, so it is 404 Not Found, not 500 Internal Server Error.
-		if errors.Is(err, storage.ErrNotFound) {
-			response.WriteJson(w, http.StatusNotFound, response.GeneralError(err))
-			return
-		}
+		student, err := storage.GetStudentById(intId)
 
 		if err != nil {
 			slog.Error("error getting user", slog.String("id", id))
@@ -130,8 +112,7 @@ func GetList(storage storage.Storage) http.HandlerFunc {
 
 		students, err := storage.GetStudents()
 		if err != nil {
-			// FIX: GeneralError(err) instead of err (see the note in New).
-			response.WriteJson(w, http.StatusInternalServerError, response.GeneralError(err))
+			response.WriteJson(w, http.StatusInternalServerError, err)
 			return
 		}
 

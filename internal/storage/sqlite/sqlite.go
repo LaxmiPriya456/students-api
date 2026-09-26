@@ -9,7 +9,6 @@ import (
 	"fmt"
 
 	"example.com/students-api/internal/config"
-	"example.com/students-api/internal/storage"
 	"example.com/students-api/internal/types"
 
 	// BLANK IMPORT (`_`): we never call this package directly. Importing it
@@ -97,10 +96,7 @@ func (s *Sqlite) GetStudentById(id int64) (types.Student, error) {
 	if err != nil {
 		// sql.ErrNoRows = the query matched nothing.
 		if err == sql.ErrNoRows {
-			// FIX: wrap storage.ErrNotFound with %w, so the handler can
-			// recognise it and answer 404. The message stays the same:
-			// "no student found with id 99".
-			return types.Student{}, fmt.Errorf("%w with id %d", storage.ErrNotFound, id)
+			return types.Student{}, fmt.Errorf("no student found with id %s", fmt.Sprint(id))
 		}
 		// %w WRAPS the original error inside our message.
 		return types.Student{}, fmt.Errorf("query error: %w", err)

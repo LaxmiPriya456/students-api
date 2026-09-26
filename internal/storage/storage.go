@@ -2,19 +2,7 @@
 // without saying HOW.
 package storage
 
-import (
-	"errors"
-
-	"example.com/students-api/internal/types"
-)
-
-// ErrNotFound is returned when no student has the requested ID.
-//
-// A package-level error like this is called a SENTINEL ERROR. Callers check
-// for it with errors.Is(err, storage.ErrNotFound), like catching a specific
-// exception class in Java. It lets the handler answer 404 without knowing
-// anything about SQL.
-var ErrNotFound = errors.New("no student found")
+import "example.com/students-api/internal/types"
 
 // Storage is an INTERFACE: a list of methods, with no code.
 //
