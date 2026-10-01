@@ -68,7 +68,7 @@ func New(storage storage.Storage) http.HandlerFunc {
 		)
 
 		// slog.String adds a key/value pair to the log line: userId=1
-		slog.Info("user created successfully", slog.String("userId", fmt.Sprint(lastId)))
+		slog.Info("User created successfully", slog.String("userId", fmt.Sprint(lastId)))
 
 		if err != nil {
 			response.WriteJson(w, http.StatusInternalServerError, err)
